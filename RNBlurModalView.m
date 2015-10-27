@@ -304,7 +304,10 @@ typedef void (^RNBlurCompletion)(void);
         if (! self.superview) {
             if (_controller) {
                 self.frame = CGRectMake(0, 0, _controller.view.bounds.size.width, _controller.view.bounds.size.height);
-                [_controller.view addSubview:self];
+                if (_controller.navigationController && [_controller.view isKindOfClass:[UIScrollView class]]) {
+                    [_controller.navigationController.view insertSubview:self belowSubview:_controller.navigationController.navigationBar];
+                    
+                } else [_controller.view addSubview:self];
             }
             else if(_parentView) {
                 self.frame = CGRectMake(0, 0, _parentView.bounds.size.width, _parentView.bounds.size.height);
@@ -697,7 +700,7 @@ typedef void (^RNBlurCompletion)(void);
     //clean up
     CGContextRelease(ctx);
     CGColorSpaceRelease(colorSpace);
-    free(pixelBuffer2)
+    free(pixelBuffer2);
     free(pixelBuffer);
     CFRelease(inBitmapData);
     
