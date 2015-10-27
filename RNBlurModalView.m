@@ -322,7 +322,10 @@ typedef void (^RNBlurCompletion)(void);
             _blurView.alpha = 0.f;
             self.frame = CGRectMake(0, 0, _controller.view.bounds.size.width, _controller.view.bounds.size.height);
 
-            [_controller.view insertSubview:_blurView belowSubview:self];
+            if (_controller.navigationController && [_controller.view isKindOfClass:[UIScrollView class]]) {
+                [_controller.navigationController.view insertSubview:_blurView belowSubview:self];
+                
+            } else [_controller.view insertSubview:_blurView belowSubview:self];
         }
         else if(_parentView) {
             _blurView = [[RNBlurView alloc] initWithCoverView:_parentView];
