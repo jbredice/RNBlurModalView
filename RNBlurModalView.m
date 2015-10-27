@@ -169,7 +169,8 @@ typedef void (^RNBlurCompletion)(void);
         [self addSubview:view];
         _contentView = view;
         _contentView.center = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame));
-        _controller = viewController;
+        if (viewController.navigationController && [viewController.view isKindOfClass:[UIScrollView class]]) _controller = viewController.navigationController;
+        else _controller = viewController;
         _parentView = nil;
         _contentView.clipsToBounds = YES;
         _contentView.layer.masksToBounds = YES;
@@ -304,8 +305,9 @@ typedef void (^RNBlurCompletion)(void);
         if (! self.superview) {
             if (_controller) {
                 self.frame = CGRectMake(0, 0, _controller.view.bounds.size.width, _controller.view.bounds.size.height);
-                if (_controller.navigationController && [_controller.view isKindOfClass:[UIScrollView class]]) {
-                    [_controller.navigationController.view insertSubview:self belowSubview:_controller.navigationController.navigationBar];
+                if ([_controller isKindOfClass:[UINavigationController class]]) {
+                    UINavigationController *navController = (UINavigationController*)_controller;
+                    [navController.view insertSubview:self belowSubview:navController.navigationBar];
                     
                 } else [_controller.view addSubview:self];
             }
@@ -321,11 +323,7 @@ typedef void (^RNBlurCompletion)(void);
             _blurView = [[RNBlurView alloc] initWithCoverView:_controller.view];
             _blurView.alpha = 0.f;
             self.frame = CGRectMake(0, 0, _controller.view.bounds.size.width, _controller.view.bounds.size.height);
-
-            if (_controller.navigationController && [_controller.view isKindOfClass:[UIScrollView class]]) {
-                [_controller.navigationController.view insertSubview:_blurView belowSubview:self];
-                
-            } else [_controller.view insertSubview:_blurView belowSubview:self];
+            [_controller.view insertSubview:_blurView belowSubview:self];
         }
         else if(_parentView) {
             _blurView = [[RNBlurView alloc] initWithCoverView:_parentView];
